@@ -43,7 +43,7 @@ impl Vec3 {
 
     #[inline]
     fn unit(&self) -> Vec3 {
-        self / self.length()
+        *self / self.length()
     }
 }
 
@@ -119,7 +119,7 @@ impl std::ops::Mul<Float> for Vec3 {
 impl std::ops::Mul<Vec3> for Float {
     type Output = Vec3;
     fn mul(self, scalar: Vec3) -> Vec3 {
-        self * scalar
+        scalar * self
     }
 }
 
