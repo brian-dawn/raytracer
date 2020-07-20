@@ -159,6 +159,16 @@ impl std::ops::AddAssign for Vec3 {
     }
 }
 
+impl std::ops::SubAssign for Vec3 {
+    fn sub_assign(&mut self, other: Self) {
+        *self = Self {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
+        }
+    }
+}
+
 impl std::ops::MulAssign<Float> for Vec3 {
     fn mul_assign(&mut self, scalar: Float) {
         *self = Self {
@@ -196,4 +206,30 @@ fn test_vectors_addition() {
 
     base += b;
     assert_eq!(base, Vec3::new(4.0, 6.0, 8.0));
+
+    base -= b;
+    assert_eq!(base, Vec3::new(2.0, 3.0, 4.0));
+}
+
+#[test]
+fn test_vectors_multiplication() {
+    let a = Vec3::new(1.0, 10.0, 100.0);
+    let b = Vec3::new(2.0, 3.0, 4.0);
+
+    let c = a * b;
+
+    assert_eq!(c, Vec3::new(2.0, 30.0, 400.0));
+
+    let d = c / b;
+
+    assert_eq!(d, a);
+
+    let mut base = Vec3::new(1.0, 2.0, 3.0);
+    base *= 2.0;
+
+    assert_eq!(base, Vec3::new(2.0, 4.0, 6.0));
+
+    base /= 2.0;
+
+    assert_eq!(base, Vec3::new(1.0, 2.0, 3.0));
 }
