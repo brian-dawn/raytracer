@@ -31,7 +31,7 @@ impl Vec3 {
     }
 
     #[inline]
-    fn length_squared(&self) -> Float {
+    pub fn length_squared(&self) -> Float {
         return self.x * self.x + self.y * self.y + self.z * self.z;
     }
 
