@@ -17,6 +17,8 @@ impl Vec3 {
     }
 
     #[inline]
+    /// I would have called this `magnitude` but this is what the book
+    /// I am following is using.
     fn length(&self) -> Float {
         return self.length_squared().sqrt();
     }
@@ -42,6 +44,8 @@ impl Vec3 {
     }
 
     #[inline]
+    /// I would have called this `normalize` but this is what the book
+    /// I am following is using.
     fn unit(&self) -> Vec3 {
         *self / self.length()
     }
@@ -232,4 +236,64 @@ fn test_vectors_multiplication() {
     base /= 2.0;
 
     assert_eq!(base, Vec3::new(1.0, 2.0, 3.0));
+}
+
+#[test]
+fn test_vectors_dot_product() {
+    let a = Vec3::new(2.0, 3.0, 4.0);
+    let b = Vec3::new(5.0, 6.0, 7.0);
+    assert_eq!(a.dot(&b), 56.0);
+}
+
+#[test]
+fn test_vectors_cross_product() {
+    let a = Vec3::new(2.0, 3.0, 4.0);
+    let b = Vec3::new(5.0, 6.0, 7.0);
+    assert_eq!(a.cross(&b), Vec3::new(-3.0, 6.0, -3.0));
+}
+
+#[test]
+fn test_vectors_unit() {
+    let a = Vec3::new(1.0, 2.0, 3.0).unit();
+    assert_eq!(a.length(), 1.0);
+    assert_eq!(
+        a,
+        Vec3::new(0.2672612419124244, 0.5345224838248488, 0.8017837257372732)
+    );
+}
+
+#[test]
+fn test_index() {
+    let a = Vec3::new(1.0, 2.0, 3.0);
+    assert_eq!(1.0, a[0]);
+    assert_eq!(2.0, a[1]);
+    assert_eq!(3.0, a[2]);
+
+    let mut b = a;
+    b[0] = 9.0;
+    b[1] = 10.0;
+    b[2] = 11.0;
+    assert_eq!(b, Vec3::new(9.0, 10.0, 11.0));
+}
+
+#[test]
+#[should_panic]
+fn test_index_out_of_bounds() {
+    let a = Vec3::zero();
+    let _ = a[4];
+}
+
+#[test]
+fn test_vectors_length() {
+    let a = Vec3::new(5.0, 0.0, 0.0);
+    assert_eq!(a.length(), 5.0);
+
+    let a = Vec3::new(0.0, 6.0, 0.0);
+    assert_eq!(a.length(), 6.0);
+
+    let a = Vec3::new(0.0, 0.0, 7.0);
+    assert_eq!(a.length(), 7.0);
+
+    let a = Vec3::new(2.0, 1.0, 2.0);
+    assert_eq!(a.length(), 3.0);
 }
