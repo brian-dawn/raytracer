@@ -1,6 +1,7 @@
 use std::io::Write;
 
 pub mod ray;
+pub mod shapes;
 pub mod vec3;
 
 use ray::Ray;
