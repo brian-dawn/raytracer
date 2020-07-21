@@ -7,19 +7,26 @@ pub struct Vec3 {
     pub z: Float,
 }
 
+pub type Color = Vec3;
+pub type Point3 = Vec3;
+
 impl Vec3 {
-    fn new(x: Float, y: Float, z: Float) -> Vec3 {
+    pub fn new(x: Float, y: Float, z: Float) -> Vec3 {
         return Vec3 { x, y, z };
     }
 
-    fn zero() -> Vec3 {
+    pub fn zero() -> Vec3 {
         return Vec3::new(0.0, 0.0, 0.0);
+    }
+
+    pub fn ones() -> Vec3 {
+        return Vec3::new(1.0, 1.0, 1.0);
     }
 
     #[inline]
     /// I would have called this `magnitude` but this is what the book
     /// I am following is using.
-    fn length(&self) -> Float {
+    pub fn length(&self) -> Float {
         return self.length_squared().sqrt();
     }
 
@@ -29,13 +36,13 @@ impl Vec3 {
     }
 
     #[inline]
-    fn dot(&self, other: &Vec3) -> Float {
+    pub fn dot(&self, other: &Vec3) -> Float {
         //
         self.x * other.x + self.y * other.y + self.z * other.z
     }
 
     #[inline]
-    fn cross(&self, other: &Vec3) -> Vec3 {
+    pub fn cross(&self, other: &Vec3) -> Vec3 {
         Vec3 {
             x: self.y * other.z - self.z * other.y,
             y: self.z * other.x - self.x * other.z,
@@ -46,7 +53,7 @@ impl Vec3 {
     #[inline]
     /// I would have called this `normalize` but this is what the book
     /// I am following is using.
-    fn unit(&self) -> Vec3 {
+    pub fn unit(&self) -> Vec3 {
         *self / self.length()
     }
 }
