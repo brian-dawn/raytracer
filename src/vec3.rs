@@ -53,6 +53,7 @@ impl Vec3 {
 
 impl std::ops::Index<usize> for Vec3 {
     type Output = Float;
+
     fn index(&self, index: usize) -> &Self::Output {
         match index {
             0 => &self.x,
@@ -100,6 +101,7 @@ impl std::ops::Sub<Vec3> for Vec3 {
 
 impl std::ops::Mul for Vec3 {
     type Output = Vec3;
+
     fn mul(self, other: Self) -> Vec3 {
         Vec3 {
             x: self.x * other.x,
@@ -111,6 +113,7 @@ impl std::ops::Mul for Vec3 {
 
 impl std::ops::Mul<Float> for Vec3 {
     type Output = Vec3;
+
     fn mul(self, scalar: Float) -> Vec3 {
         Vec3 {
             x: self.x * scalar,
@@ -122,6 +125,7 @@ impl std::ops::Mul<Float> for Vec3 {
 
 impl std::ops::Mul<Vec3> for Float {
     type Output = Vec3;
+
     fn mul(self, scalar: Vec3) -> Vec3 {
         scalar * self
     }
@@ -129,6 +133,7 @@ impl std::ops::Mul<Vec3> for Float {
 
 impl std::ops::Div for Vec3 {
     type Output = Vec3;
+
     fn div(self, other: Self) -> Vec3 {
         Vec3 {
             x: self.x / other.x,
@@ -140,6 +145,7 @@ impl std::ops::Div for Vec3 {
 
 impl std::ops::Div<Float> for Vec3 {
     type Output = Vec3;
+
     fn div(self, scalar: Float) -> Vec3 {
         self * (1.0 / scalar)
     }
