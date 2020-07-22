@@ -12,7 +12,7 @@ use ray::Ray;
 use shapes::hittable::{HitRecord, Hittable};
 use shapes::hittable_list::HittableList;
 use shapes::sphere::Sphere;
-use vec3::{Color, Point3, Vec3};
+use vec3::{Color, Point3};
 
 fn write_color(pixel: &Color, samples_per_pixel: i32) {
     let scale = 1.0 / samples_per_pixel as f64;
@@ -25,21 +25,6 @@ fn write_color(pixel: &Color, samples_per_pixel: i32) {
     let ib = (256.0 * utils::clamp(b, 0.0, 0.999)) as i32;
 
     println!("{} {} {}", ir, ig, ib);
-}
-
-fn hit_sphere(center: &Point3, radius: f64, r: &Ray) -> f64 {
-    let oc = r.origin - *center;
-
-    let a = r.direction.length_squared();
-    let half_b = oc.dot(&r.direction);
-    let c = oc.length_squared() - radius * radius;
-    let discriminant = half_b * half_b - a * c;
-
-    if discriminant < 0.0 {
-        -1.0
-    } else {
-        (-half_b - discriminant.sqrt()) / a
-    }
 }
 
 fn ray_color(r: &Ray, world: &HittableList) -> Color {
