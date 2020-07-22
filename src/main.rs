@@ -49,8 +49,8 @@ fn main() {
 
     // World
     let mut world = HittableList::new();
-    world.add(Rc::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5)));
-    world.add(Rc::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)));
+    world.add(Box::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5)));
+    world.add(Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)));
 
     // Camera
     let cam = Camera::new();
