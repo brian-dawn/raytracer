@@ -1,16 +1,24 @@
 use std::io::Write;
+use std::rc::Rc;
 
 pub mod ray;
 pub mod shapes;
 pub mod vec3;
 
 use ray::Ray;
+use shapes::hittable::{HitRecord, Hittable};
+use shapes::hittable_list::HittableList;
+use shapes::sphere::Sphere;
 use vec3::{Color, Point3, Vec3};
 
 fn write_color(pixel: &Color) {
-    let ir = (255.999 * pixel.x) as i32;
-    let ig = (255.999 * pixel.y) as i32;
-    let ib = (255.999 * pixel.z) as i32;
+    assert!(pixel.x <= 1.0);
+    assert!(pixel.y <= 1.0);
+    assert!(pixel.z <= 1.0);
+
+    let ir = (255.9999999 * pixel.x) as i32;
+    let ig = (255.9999999 * pixel.y) as i32;
+    let ib = (255.9999999 * pixel.z) as i32;
 
     println!("{} {} {}", ir, ig, ib);
 }
@@ -30,16 +38,16 @@ fn hit_sphere(center: &Point3, radius: f64, r: &Ray) -> f64 {
     }
 }
 
-fn ray_color(r: &Ray) -> Color {
-    let mut t = hit_sphere(&Point3::new(0.0, 0.0, -1.0), 0.5, &r);
-    if t > 0.0 {
-        // normal
-        let n = (r.at(t) - Vec3::new(0.0, 0.0, -1.0)).unit();
-        return 0.5 * Color::new(n.x + 1.0, n.y + 1.0, n.z + 1.0);
+fn ray_color(r: &Ray, world: &HittableList) -> Color {
+    let mut rec = HitRecord::new();
+
+    if world.hit(r, 0.0, std::f64::INFINITY, &mut rec) {
+        return 0.5 * (rec.normal + Color::new(1.0, 1.0, 1.0));
     }
+
     let unit_direction = r.direction.unit();
-    t = 0.5 * (unit_direction.y + 1.0);
-    (1.0 - t) * Color::ones() + t * Color::new(0.5, 0.7, 1.0)
+    let t = 0.5 * (unit_direction.y + 1.0);
+    (1.0 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
 }
 
 fn main() {
@@ -50,8 +58,12 @@ fn main() {
     let image_width = 256;
     let image_height = (image_width as f64 / ASPECT_RATIO) as i32;
 
-    // Camera
+    // World
+    let mut world = HittableList::new();
+    world.add(Rc::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5)));
+    world.add(Rc::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)));
 
+    // Camera
     let viewport_height = 2.0;
     let viewport_width = ASPECT_RATIO * viewport_height;
     let focal_length = 1.0;
@@ -78,7 +90,7 @@ fn main() {
                 lower_left_corner + u * horizontal + v * vertical - origin,
             );
 
-            let pixel_color = ray_color(&r);
+            let pixel_color = ray_color(&r, &world);
             write_color(&pixel_color);
         }
     }
