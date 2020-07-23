@@ -27,11 +27,17 @@ fn write_color(pixel: &Color, samples_per_pixel: i32) {
     println!("{} {} {}", ir, ig, ib);
 }
 
-fn ray_color(r: &Ray, world: &HittableList) -> Color {
+fn ray_color(r: &Ray, world: &HittableList, depth: i32) -> Color {
     let mut rec = HitRecord::new();
 
+    // If we've exceeded the ray bounce limit then we're done gathering light.
+    if depth <= 0 {
+        return Color::zero();
+    }
+
     if world.hit(r, 0.0, std::f64::INFINITY, &mut rec) {
-        return 0.5 * (rec.normal + Color::new(1.0, 1.0, 1.0));
+        let target = rec.p + rec.normal + Point3::random_in_unit_sphere();
+        return 0.5 * ray_color(&Ray::new(rec.p, target - rec.p), &world, depth - 1);
     }
 
     let unit_direction = r.direction.unit();
@@ -46,6 +52,7 @@ fn main() {
     let image_width = 256;
     let image_height = (image_width as f64 / ASPECT_RATIO) as i32;
     let samples_per_pixel = 100;
+    let max_depth = 50;
 
     // World
     let mut world = HittableList::new();
@@ -67,7 +74,7 @@ fn main() {
                 let u = (i as f64 + utils::random()) / (image_width - 1) as f64;
                 let v = (j as f64 + utils::random()) / (image_height - 1) as f64;
                 let r = cam.get_ray(u, v);
-                pixel_color += ray_color(&r, &world);
+                pixel_color += ray_color(&r, &world, max_depth);
             }
 
             write_color(&pixel_color, samples_per_pixel);

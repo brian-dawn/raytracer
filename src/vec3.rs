@@ -1,3 +1,4 @@
+use crate::utils::{random, random_range};
 type Float = f64;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -21,6 +22,31 @@ impl Vec3 {
 
     pub fn ones() -> Vec3 {
         return Vec3::new(1.0, 1.0, 1.0);
+    }
+
+    pub fn random() -> Vec3 {
+        let x = random();
+        let y = random();
+        let z = random();
+
+        return Vec3::new(x, y, z);
+    }
+
+    pub fn random_range(min: f64, max: f64) -> Vec3 {
+        let x = random_range(min, max);
+        let y = random_range(min, max);
+        let z = random_range(min, max);
+
+        return Vec3::new(x, y, z);
+    }
+
+    pub fn random_in_unit_sphere() -> Vec3 {
+        return loop {
+            let p = Vec3::random_range(-1.0, 1.0);
+            if p.length_squared() < 1.0 {
+                break p;
+            }
+        };
     }
 
     #[inline]
