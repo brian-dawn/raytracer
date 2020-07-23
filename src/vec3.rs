@@ -56,6 +56,16 @@ impl Vec3 {
         Vec3::new(r * a.cos(), r * a.sin(), z)
     }
 
+    pub fn random_in_hemisphere(normal: &Vec3) -> Vec3 {
+        let in_unit_sphere = Vec3::random_in_unit_sphere();
+        if in_unit_sphere.dot(&normal) > 0.0 {
+            // In the same hemisphere as the normal.
+            in_unit_sphere
+        } else {
+            -in_unit_sphere
+        }
+    }
+
     #[inline]
     /// I would have called this `magnitude` but this is what the book
     /// I am following is using.
