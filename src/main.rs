@@ -38,7 +38,7 @@ fn ray_color(r: &Ray, world: &HittableList, depth: i32) -> Color {
     }
 
     if world.hit(r, 0.001, std::f64::INFINITY, &mut rec) {
-        let target = rec.p + rec.normal + Point3::random_in_unit_sphere();
+        let target = rec.p + rec.normal + Point3::random_unit_vector();
         return 0.5 * ray_color(&Ray::new(rec.p, target - rec.p), &world, depth - 1);
     }
 
