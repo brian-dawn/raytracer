@@ -16,9 +16,11 @@ use vec3::{Color, Point3};
 
 fn write_color(pixel: &Color, samples_per_pixel: i32) {
     let scale = 1.0 / samples_per_pixel as f64;
-    let r = pixel.x * scale;
-    let g = pixel.y * scale;
-    let b = pixel.z * scale;
+
+    // Divide color by the number of samples and gamma correct for gamma=2.0.
+    let r = (pixel.x * scale).sqrt();
+    let g = (pixel.y * scale).sqrt();
+    let b = (pixel.z * scale).sqrt();
 
     let ir = (256.0 * utils::clamp(r, 0.0, 0.999)) as i32;
     let ig = (256.0 * utils::clamp(g, 0.0, 0.999)) as i32;
