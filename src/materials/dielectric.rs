@@ -1,6 +1,7 @@
 use super::Material;
 use crate::{ray::Ray, shapes::hittable::HitRecord, vec3::Color, vec3::Vec3};
 
+#[derive(Clone, Copy)]
 pub struct Dielectric {
     pub ref_idx: f64,
 }
