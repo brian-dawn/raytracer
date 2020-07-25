@@ -232,31 +232,19 @@ impl std::ops::Neg for Vec3 {
 
 impl std::ops::AddAssign for Vec3 {
     fn add_assign(&mut self, other: Self) {
-        *self = Self {
-            x: self.x + other.x,
-            y: self.y + other.y,
-            z: self.z + other.z,
-        }
+        *self = *self + other
     }
 }
 
 impl std::ops::SubAssign for Vec3 {
     fn sub_assign(&mut self, other: Self) {
-        *self = Self {
-            x: self.x - other.x,
-            y: self.y - other.y,
-            z: self.z - other.z,
-        }
+        *self = *self - other;
     }
 }
 
 impl std::ops::MulAssign<Float> for Vec3 {
     fn mul_assign(&mut self, scalar: Float) {
-        *self = Self {
-            x: self.x * scalar,
-            y: self.y * scalar,
-            z: self.z * scalar,
-        }
+        *self = *self * scalar;
     }
 }
 

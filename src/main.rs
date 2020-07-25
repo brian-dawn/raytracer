@@ -129,10 +129,10 @@ fn ray_color(r: &Ray, world: &HittableList, depth: i32) -> Color {
 }
 
 fn main() {
-    const ASPECT_RATIO: f64 = 3.0 / 2.0;
+    const ASPECT_RATIO: f64 = 16.0 / 9.0;
 
     // Image
-    let image_width = 1200;
+    let image_width = 2560;
     let image_height = (image_width as f64 / ASPECT_RATIO) as i32;
     let samples_per_pixel = 500;
     let max_depth = 50;
