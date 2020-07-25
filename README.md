@@ -6,6 +6,8 @@ I am mostly following:
 
     https://raytracing.github.io/books/RayTracingInOneWeekend.html
 
-# Goals
+# Usage
 
-Minimal dependencies, maybe rayon eventually for parallelism.
+     cargo run --release > image.ppm
+
+Then you can view the ppm file in any ppm viewer (gimp or krita should work fine).
