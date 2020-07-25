@@ -70,13 +70,15 @@ fn main() {
         albedo: Color::new(0.8, 0.8, 0.0),
     };
 
-    let material_center = materials::dielectric::Dielectric { ref_idx: 1.5 };
+    let material_center = materials::lambertian::Lambertian {
+        albedo: Color::new(0.1, 0.2, 0.5),
+    };
 
     let material_left = materials::dielectric::Dielectric { ref_idx: 1.5 };
 
     let material_right = materials::metal::Metal {
         albedo: Color::new(0.8, 0.6, 0.2),
-        fuzz: 1.0,
+        fuzz: 0.0,
     };
 
     world.add(Box::new(Sphere::new(
