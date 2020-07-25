@@ -29,13 +29,26 @@ impl Material for Dielectric {
             // Must reflect.
             let reflected = unit_direction.reflect(&rec.normal);
             *scattered = Ray::new(rec.p, reflected);
-            true
-        } else {
-            // Can refract.
-            let refracted = unit_direction.refract(&rec.normal, etai_over_etat);
-            *scattered = Ray::new(rec.p, refracted);
-
-            true
+            return true;
         }
+        // Can refract.
+
+        let reflect_prob = schlick(cos_theta, etai_over_etat);
+        if crate::utils::random() < reflect_prob {
+            let reflected = unit_direction.reflect(&rec.normal);
+            *scattered = Ray::new(rec.p, reflected);
+            return true;
+        }
+
+        let refracted = unit_direction.refract(&rec.normal, etai_over_etat);
+        *scattered = Ray::new(rec.p, refracted);
+
+        true
     }
+}
+
+fn schlick(cosine: f64, ref_idx: f64) -> f64 {
+    let mut r0 = (1.0 - ref_idx) / (1.0 + ref_idx);
+    r0 = r0 * r0;
+    r0 + (1.0 - r0) * (1.0 - cosine).powi(5)
 }
