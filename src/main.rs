@@ -39,7 +39,7 @@ fn random_scene() -> HittableList {
             let center = Point3::new(af + 0.9 * random(), 0.2, bf + 0.9 * random());
             if (center - Point3::new(4.0, 0.2, 0.0)).length() > 0.9 {
                 let sphere_material: Option<Arc<dyn materials::Material + Sync + Send>> =
-                    if choose_mat < 1.8 {
+                    if choose_mat < 0.8 {
                         // Diffuse
                         let albedo = Color::random() * Color::random();
                         Some(Arc::new(materials::lambertian::Lambertian { albedo }))
