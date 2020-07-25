@@ -3,6 +3,7 @@ use crate::{ray::Ray, shapes::hittable::HitRecord, vec3::Color, vec3::Vec3};
 
 pub struct Metal {
     pub albedo: Color,
+    pub fuzz: f64,
 }
 
 impl Material for Metal {
@@ -14,7 +15,7 @@ impl Material for Metal {
         scattered: &mut Ray,
     ) -> bool {
         let reflected = r_in.direction.unit().reflect(&rec.normal);
-        *scattered = Ray::new(rec.p, reflected);
+        *scattered = Ray::new(rec.p, reflected + self.fuzz * Vec3::random_in_unit_sphere());
         *attenuation = self.albedo;
 
         scattered.direction.dot(&rec.normal) > 0.0
