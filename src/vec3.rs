@@ -66,6 +66,15 @@ impl Vec3 {
         }
     }
 
+    pub fn random_in_unit_disk() -> Vec3 {
+        loop {
+            let p = Vec3::new(random_range(-1.0, 1.0), random_range(-1.0, 1.0), 0.0);
+            if p.length_squared() < 1.0 {
+                break p;
+            }
+        }
+    }
+
     pub fn refract(&self, normal: &Vec3, etai_over_etat: f64) -> Vec3 {
         let uv = *self;
         let cos_theta = -uv.dot(&normal);
