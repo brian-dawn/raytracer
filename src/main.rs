@@ -70,14 +70,9 @@ fn main() {
         albedo: Color::new(0.8, 0.8, 0.0),
     };
 
-    let material_center = materials::lambertian::Lambertian {
-        albedo: Color::new(0.7, 0.3, 0.3),
-    };
+    let material_center = materials::dielectric::Dielectric { ref_idx: 1.5 };
 
-    let material_left = materials::metal::Metal {
-        albedo: Color::new(0.8, 0.8, 0.8),
-        fuzz: 0.3,
-    };
+    let material_left = materials::dielectric::Dielectric { ref_idx: 1.5 };
 
     let material_right = materials::metal::Metal {
         albedo: Color::new(0.8, 0.6, 0.2),
