@@ -2,6 +2,7 @@ use std::io::Write;
 use std::rc::Rc;
 
 pub mod camera;
+pub mod materials;
 pub mod ray;
 pub mod shapes;
 pub mod utils;
@@ -58,8 +59,16 @@ fn main() {
 
     // World
     let mut world = HittableList::new();
-    world.add(Box::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5)));
-    world.add(Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)));
+    world.add(Box::new(Sphere::new(
+        Point3::new(0.0, 0.0, -1.0),
+        0.5,
+        None,
+    )));
+    world.add(Box::new(Sphere::new(
+        Point3::new(0.0, -100.5, -1.0),
+        100.0,
+        None,
+    )));
 
     // Camera
     let cam = Camera::new();
