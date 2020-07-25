@@ -38,20 +38,21 @@ fn random_scene() -> HittableList {
             let choose_mat = random();
             let center = Point3::new(af + 0.9 * random(), 0.2, bf + 0.9 * random());
             if (center - Point3::new(4.0, 0.2, 0.0)).length() > 0.9 {
-                let sphere_material: Option<Arc<dyn materials::Material + Sync + Send>> = if choose_mat < 1.8 {
-                    // Diffuse
-                    let albedo = Color::random() * Color::random();
-                    Some(Arc::new(materials::lambertian::Lambertian { albedo }))
-                } else if choose_mat < 0.95 {
-                    // Metal
-                    let albedo = Color::random_range(0.5, 1.0);
-                    let fuzz = random_range(0.0, 0.5);
+                let sphere_material: Option<Arc<dyn materials::Material + Sync + Send>> =
+                    if choose_mat < 1.8 {
+                        // Diffuse
+                        let albedo = Color::random() * Color::random();
+                        Some(Arc::new(materials::lambertian::Lambertian { albedo }))
+                    } else if choose_mat < 0.95 {
+                        // Metal
+                        let albedo = Color::random_range(0.5, 1.0);
+                        let fuzz = random_range(0.0, 0.5);
 
-                    Some(Arc::new(materials::metal::Metal { albedo, fuzz }))
-                } else {
-                    // Glass
-                    Some(Arc::new(materials::dielectric::Dielectric { ref_idx: 1.5 }))
-                };
+                        Some(Arc::new(materials::metal::Metal { albedo, fuzz }))
+                    } else {
+                        // Glass
+                        Some(Arc::new(materials::dielectric::Dielectric { ref_idx: 1.5 }))
+                    };
 
                 world.add(Box::new(Sphere::new(center, 0.2, sphere_material)));
             }
@@ -159,19 +160,21 @@ fn main() {
     for j in (0..image_height).rev() {
         eprint!("\rScanlines remaining: {} ", j);
         std::io::stderr().flush().unwrap();
-        for i in 0..image_width {
-            let pixel_color: Color = (0..samples_per_pixel)
-                .into_par_iter()
-                .map(|_| {
+        (0..image_width)
+            .into_par_iter()
+            .map(|i| {
+                let mut pixel_color = Color::zero();
+                for s in 0..samples_per_pixel {
                     let u = (i as f64 + utils::random()) / (image_width - 1) as f64;
                     let v = (j as f64 + utils::random()) / (image_height - 1) as f64;
                     let r = cam.get_ray(u, v);
-                    ray_color(&r, &world, max_depth)
-                })
-                .reduce(|| Vec3::zero(), |a, b| a + b);
-
-            write_color(&pixel_color, samples_per_pixel);
-        }
+                    pixel_color += ray_color(&r, &world, max_depth);
+                }
+                pixel_color
+            })
+            .collect::<Vec<Color>>()
+            .into_iter()
+            .for_each(|pixel_color| write_color(&pixel_color, samples_per_pixel));
     }
 
     eprint!("\nDone.\n");
