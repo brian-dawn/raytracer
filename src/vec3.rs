@@ -66,6 +66,10 @@ impl Vec3 {
         }
     }
 
+    pub fn reflect(&self, normal: &Vec3) -> Vec3 {
+        return *self - 2.0 * self.dot(normal) * *normal;
+    }
+
     #[inline]
     /// I would have called this `magnitude` but this is what the book
     /// I am following is using.

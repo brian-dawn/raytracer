@@ -13,7 +13,7 @@ use ray::Ray;
 use shapes::hittable::{HitRecord, Hittable};
 use shapes::hittable_list::HittableList;
 use shapes::sphere::Sphere;
-use vec3::{Color, Point3};
+use vec3::{Color, Point3, Vec3};
 
 fn write_color(pixel: &Color, samples_per_pixel: i32) {
     let scale = 1.0 / samples_per_pixel as f64;
@@ -39,8 +39,14 @@ fn ray_color(r: &Ray, world: &HittableList, depth: i32) -> Color {
     }
 
     if world.hit(r, 0.001, std::f64::INFINITY, &mut rec) {
-        let target = rec.p + Point3::random_in_hemisphere(&rec.normal);
-        return 0.5 * ray_color(&Ray::new(rec.p, target - rec.p), &world, depth - 1);
+        let mut scattered = Ray::new(Vec3::zero(), Vec3::zero());
+        let mut attenuation = Color::zero();
+        if let Some(mat_ptr) = &rec.mat_ptr {
+            if mat_ptr.scatter(&r, &rec, &mut attenuation, &mut scattered) {
+                return attenuation * ray_color(&scattered, &world, depth - 1);
+            }
+        }
+        return Color::zero();
     }
 
     let unit_direction = r.direction.unit();
@@ -59,15 +65,45 @@ fn main() {
 
     // World
     let mut world = HittableList::new();
-    world.add(Box::new(Sphere::new(
-        Point3::new(0.0, 0.0, -1.0),
-        0.5,
-        None,
-    )));
+
+    let material_ground = materials::lambertian::Lambertian {
+        albedo: Color::new(0.8, 0.8, 0.0),
+    };
+
+    let material_center = materials::lambertian::Lambertian {
+        albedo: Color::new(0.7, 0.3, 0.3),
+    };
+
+    let material_left = materials::metal::Metal {
+        albedo: Color::new(0.8, 0.8, 0.8),
+    };
+
+    let material_right = materials::metal::Metal {
+        albedo: Color::new(0.8, 0.6, 0.2),
+    };
+
     world.add(Box::new(Sphere::new(
         Point3::new(0.0, -100.5, -1.0),
         100.0,
-        None,
+        Some(Rc::new(material_ground)),
+    )));
+
+    world.add(Box::new(Sphere::new(
+        Point3::new(0.0, 0.0, -1.0),
+        0.5,
+        Some(Rc::new(material_center)),
+    )));
+
+    world.add(Box::new(Sphere::new(
+        Point3::new(-1.0, 0.0, -1.0),
+        0.5,
+        Some(Rc::new(material_left)),
+    )));
+
+    world.add(Box::new(Sphere::new(
+        Point3::new(1.0, 0.0, -1.0),
+        0.5,
+        Some(Rc::new(material_right)),
     )));
 
     // Camera
