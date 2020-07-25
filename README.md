@@ -1,6 +1,6 @@
 # raytracer
 
-This is a raytracer in rust. Currently a WIP.
+This is a raytracer in rust.
 
 I am mostly following:
 
