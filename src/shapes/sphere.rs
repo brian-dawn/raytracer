@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::sync::Arc;
 
 use super::hittable::Hittable;
 use crate::materials::Material;
@@ -7,11 +7,15 @@ use crate::vec3::Point3;
 pub struct Sphere {
     pub center: Point3,
     pub radius: f64,
-    pub mat_ptr: Option<Rc<dyn Material>>,
+    pub mat_ptr: Option<Arc<dyn Material + Sync + Send>>,
 }
 
 impl Sphere {
-    pub fn new(center: Point3, radius: f64, mat_ptr: Option<Rc<dyn Material>>) -> Sphere {
+    pub fn new(
+        center: Point3,
+        radius: f64,
+        mat_ptr: Option<Arc<dyn Material + Sync + Send>>,
+    ) -> Sphere {
         Sphere {
             center,
             radius,

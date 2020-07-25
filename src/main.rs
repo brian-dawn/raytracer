@@ -1,5 +1,7 @@
+use rayon::prelude::*;
+
 use std::io::Write;
-use std::rc::Rc;
+use std::sync::Arc;
 
 pub mod camera;
 pub mod materials;
@@ -25,7 +27,7 @@ fn random_scene() -> HittableList {
     world.add(Box::new(Sphere::new(
         Point3::new(0.0, -1000.0, 0.0),
         1000.0,
-        Some(Rc::new(material_ground)),
+        Some(Arc::new(material_ground)),
     )));
 
     for a in -11..11 {
@@ -36,19 +38,19 @@ fn random_scene() -> HittableList {
             let choose_mat = random();
             let center = Point3::new(af + 0.9 * random(), 0.2, bf + 0.9 * random());
             if (center - Point3::new(4.0, 0.2, 0.0)).length() > 0.9 {
-                let sphere_material: Option<Rc<dyn materials::Material>> = if choose_mat < 0.8 {
+                let sphere_material: Option<Arc<dyn materials::Material + Sync + Send>> = if choose_mat < 1.8 {
                     // Diffuse
                     let albedo = Color::random() * Color::random();
-                    Some(Rc::new(materials::lambertian::Lambertian { albedo }))
+                    Some(Arc::new(materials::lambertian::Lambertian { albedo }))
                 } else if choose_mat < 0.95 {
                     // Metal
                     let albedo = Color::random_range(0.5, 1.0);
                     let fuzz = random_range(0.0, 0.5);
 
-                    Some(Rc::new(materials::metal::Metal { albedo, fuzz }))
+                    Some(Arc::new(materials::metal::Metal { albedo, fuzz }))
                 } else {
                     // Glass
-                    Some(Rc::new(materials::dielectric::Dielectric { ref_idx: 1.5 }))
+                    Some(Arc::new(materials::dielectric::Dielectric { ref_idx: 1.5 }))
                 };
 
                 world.add(Box::new(Sphere::new(center, 0.2, sphere_material)));
@@ -60,7 +62,7 @@ fn random_scene() -> HittableList {
     world.add(Box::new(Sphere::new(
         Point3::new(0.0, 1.0, 0.0),
         1.0,
-        Some(Rc::new(material1)),
+        Some(Arc::new(material1)),
     )));
 
     let material2 = materials::lambertian::Lambertian {
@@ -69,7 +71,7 @@ fn random_scene() -> HittableList {
     world.add(Box::new(Sphere::new(
         Point3::new(-4.0, 1.0, 0.0),
         1.0,
-        Some(Rc::new(material2)),
+        Some(Arc::new(material2)),
     )));
 
     let material3 = materials::metal::Metal {
@@ -80,7 +82,7 @@ fn random_scene() -> HittableList {
     world.add(Box::new(Sphere::new(
         Point3::new(4.0, 1.0, 0.0),
         1.0,
-        Some(Rc::new(material3)),
+        Some(Arc::new(material3)),
     )));
 
     world
@@ -158,13 +160,15 @@ fn main() {
         eprint!("\rScanlines remaining: {} ", j);
         std::io::stderr().flush().unwrap();
         for i in 0..image_width {
-            let mut pixel_color = Color::zero();
-            for s in 0..samples_per_pixel {
-                let u = (i as f64 + utils::random()) / (image_width - 1) as f64;
-                let v = (j as f64 + utils::random()) / (image_height - 1) as f64;
-                let r = cam.get_ray(u, v);
-                pixel_color += ray_color(&r, &world, max_depth);
-            }
+            let pixel_color: Color = (0..samples_per_pixel)
+                .into_par_iter()
+                .map(|_| {
+                    let u = (i as f64 + utils::random()) / (image_width - 1) as f64;
+                    let v = (j as f64 + utils::random()) / (image_height - 1) as f64;
+                    let r = cam.get_ray(u, v);
+                    ray_color(&r, &world, max_depth)
+                })
+                .reduce(|| Vec3::zero(), |a, b| a + b);
 
             write_color(&pixel_color, samples_per_pixel);
         }
