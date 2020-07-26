@@ -6,12 +6,14 @@ use std::sync::Arc;
 pub mod camera;
 pub mod materials;
 pub mod ray;
+pub mod render;
 pub mod shapes;
 pub mod utils;
 pub mod vec3;
 
 use camera::Camera;
 use ray::Ray;
+use render::ray_color;
 use shapes::hittable::{HitRecord, Hittable};
 use shapes::hittable_list::HittableList;
 use shapes::sphere::Sphere;
@@ -102,30 +104,6 @@ fn write_color(pixel: &Color, samples_per_pixel: i32) {
     let ib = (256.0 * utils::clamp(b, 0.0, 0.999)) as i32;
 
     println!("{} {} {}", ir, ig, ib);
-}
-
-fn ray_color(r: &Ray, world: &HittableList, depth: i32) -> Color {
-    let mut rec = HitRecord::new();
-
-    // If we've exceeded the ray bounce limit then we're done gathering light.
-    if depth <= 0 {
-        return Color::zero();
-    }
-
-    if world.hit(r, 0.001, std::f64::INFINITY, &mut rec) {
-        let mut scattered = Ray::new(Vec3::zero(), Vec3::zero());
-        let mut attenuation = Color::zero();
-        if let Some(mat_ptr) = &rec.mat_ptr {
-            if mat_ptr.scatter(&r, &rec, &mut attenuation, &mut scattered) {
-                return attenuation * ray_color(&scattered, &world, depth - 1);
-            }
-        }
-        return Color::zero();
-    }
-
-    let unit_direction = r.direction.unit();
-    let t = 0.5 * (unit_direction.y + 1.0);
-    (1.0 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
 }
 
 fn main() {
