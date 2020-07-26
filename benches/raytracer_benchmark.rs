@@ -53,33 +53,6 @@ fn random_scene() -> HittableList {
         }
     }
 
-    let material1 = materials::dielectric::Dielectric { ref_idx: 1.5 };
-    world.add(Box::new(Sphere::new(
-        Point3::new(0.0, 1.0, 0.0),
-        1.0,
-        Some(Arc::new(material1)),
-    )));
-
-    let material2 = materials::lambertian::Lambertian {
-        albedo: Color::new(0.4, 0.2, 0.1),
-    };
-    world.add(Box::new(Sphere::new(
-        Point3::new(-4.0, 1.0, 0.0),
-        1.0,
-        Some(Arc::new(material2)),
-    )));
-
-    let material3 = materials::metal::Metal {
-        albedo: Color::new(0.7, 0.6, 0.5),
-        fuzz: 0.0,
-    };
-
-    world.add(Box::new(Sphere::new(
-        Point3::new(4.0, 1.0, 0.0),
-        1.0,
-        Some(Arc::new(material3)),
-    )));
-
     world
 }
 
